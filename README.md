@@ -40,6 +40,6 @@ This is a collection of utilities I made using the macOS Automator, with predefi
 
 > Open another Wechat to login a different account
 
-### Usage
+#### Usage
 
 Drag it to `/Applications` folder and use it like a normal app.
