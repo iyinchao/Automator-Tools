@@ -35,3 +35,11 @@ This is a collection of utilities I made using the macOS Automator, with predefi
 
 1. Press command key (`⌘`) and Drag the app to Finder's toolbar to add.
 2. Just click it.
+
+### 💬 Wechat 2
+
+> Open another Wechat to login a different account
+
+### Usage
+
+Drag it to `/Applications` folder and use it like a normal app.
