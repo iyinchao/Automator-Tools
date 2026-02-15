@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>AMApplicationBuild</key>
-	<string>523</string>
+	<string>534</string>
 	<key>AMApplicationVersion</key>
 	<string>2.10</string>
 	<key>AMDocumentVersion</key>
@@ -82,7 +82,7 @@
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>1089.000000:111.000000</string>
+				<string>207.000000:68.000000</string>
 			</dict>
 			<key>isViewVisible</key>
 			<integer>1</integer>
@@ -186,7 +186,7 @@
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>1089.000000:176.000000</string>
+				<string>565.000000:176.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Get Specified Finder Items.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -236,7 +236,91 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>-- https://apple.stackexchange.com/questions/110778/open-new-tab-in-iterm-and-execute-command-there/360827-- https://talk.automators.fm/t/opening-a-new-terminal-tab-and-running-a-command-in-it/4839/4on is_running(appName)	tell application "System Events" to (name of processes) contains appNameend is_runningon iTermNewTabs(fileList, isFirstNewTab)	repeat with b from 1 to length of fileList		set currentItem to item b of fileList		if currentItem ≠ null then			if b ≠ 1 or isFirstNewTab = true then				delay 0.3				tell application "System Events" to keystroke "t" using command down				delay 0.2			end if						tell application "iTerm"				repeat until (exists current window)					delay 0.1				end repeat				tell current session of the last tab of current window					write text the POSIX path of currentItem				end tell			end tell		end if	end repeatend iTermNewTabson run {input, parameters}	-- convert input to list	set openList to {}	repeat with a from 1 to length of input		set currentItem to item a of input		set the end of openList to currentItem	end repeat		-- get current finder opened dir	tell application "Finder"		if exists Finder window 1 then			try				set currentDir to target of Finder window 1 as alias			on error				set currentDir to null			end try		else			set currentDir to null		end if	end tell		-- merge if no selected files	if length of input = 0 then		set the end of openList to currentDir	end if		-- filter to remove empty item	set finalList to {}	repeat with b from 1 to length of openList		set currentItem to item b of openList		if currentItem ≠ null then			set the end of finalList to currentItem		end if	end repeat		set iTermRunning to is_running("iTerm2")	if iTermRunning then		-- running		activate application "iTerm"		iTermNewTabs(finalList, true)	else		-- not running		tell application "iTerm"			create window with default profile			-- launch session "Default Session"		end tell		delay 0.3		activate application "iTerm"		iTermNewTabs(finalList, false)	end if		return finalListend run</string>
+					<string>-- 检查应用是否正在运行
+on is_running(appName)
+    tell application "System Events" to (name of processes) contains appName
+end is_running
+
+-- 打开 iTerm2 的新标签页并执行命令
+on iTermNewTabs(fileList, isFirstNewTab)
+    repeat with b from 1 to length of fileList
+        set currentItem to item b of fileList
+        if currentItem ≠ null then
+            -- 如果不是第一个新标签页，创建新标签页
+            if b ≠ 1 or isFirstNewTab = true then
+                delay 0.3
+                tell application "System Events" to keystroke "t" using command down
+                delay 0.2
+            end if
+            
+            tell application "iTerm"
+                repeat until (exists current window)
+                    delay 0.1
+                end repeat
+                tell current session of the last tab of current window
+                    -- 处理路径中的空格，确保正确转义
+                    write text "cd " &amp; quoted form of (POSIX path of currentItem)
+                end tell
+            end tell
+        end if
+    end repeat
+end iTermNewTabs
+
+-- 主程序运行部分
+on run {input, parameters}
+    -- 将输入转换为列表
+    set openList to {}
+    repeat with a from 1 to length of input
+        set currentItem to item a of input
+        set the end of openList to currentItem
+    end repeat
+    
+    -- 获取当前 Finder 窗口的目录
+    tell application "Finder"
+        if exists Finder window 1 then
+            try
+                set currentDir to target of Finder window 1 as alias
+            on error
+                set currentDir to null
+            end try
+        else
+            set currentDir to null
+        end if
+    end tell
+    
+    -- 如果没有选中文件，则使用当前目录
+    if length of input = 0 then
+        set the end of openList to currentDir
+    end if
+    
+    -- 过滤空值
+    set finalList to {}
+    repeat with b from 1 to length of openList
+        set currentItem to item b of openList
+        if currentItem ≠ null then
+            set the end of finalList to currentItem
+        end if
+    end repeat
+    
+    -- 检查 iTerm2 是否正在运行
+    set iTermRunning to is_running("iTerm2")
+    if iTermRunning then
+        -- iTerm 已经在运行
+        activate application "iTerm"
+        iTermNewTabs(finalList, true)
+    else
+        -- iTerm 未运行
+        tell application "iTerm"
+            create window with default profile
+        end tell
+        delay 0.3
+        activate application "iTerm"
+        iTermNewTabs(finalList, false)
+    end if
+    
+    return finalList
+end run
+</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -290,7 +374,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>1089.000000:421.000000</string>
+				<string>565.000000:421.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -466,7 +550,7 @@ done</string>
 				<key>isViewVisible</key>
 				<integer>0</integer>
 				<key>location</key>
-				<string>1089.000000:462.000000</string>
+				<string>565.000000:462.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -476,19 +560,26 @@ done</string>
 	</array>
 	<key>connectors</key>
 	<dict>
-		<key>6478AF6D-CFC9-455C-A03D-68FDA1DDCEE2</key>
+		<key>98439DC0-1920-410F-9FA3-0AF6EF8667F9</key>
+		<dict>
+			<key>from</key>
+			<string>4155B7E5-8B28-455B-A70D-61CD5E2A89F4 - 4155B7E5-8B28-455B-A70D-61CD5E2A89F4</string>
+			<key>to</key>
+			<string>71A632C9-353A-4F74-AD12-EEDEFC789BDF - 71A632C9-353A-4F74-AD12-EEDEFC789BDF</string>
+		</dict>
+		<key>A21DBC67-D2EC-4688-BE45-DFC7FF80073C</key>
+		<dict>
+			<key>from</key>
+			<string>71A632C9-353A-4F74-AD12-EEDEFC789BDF - 71A632C9-353A-4F74-AD12-EEDEFC789BDF</string>
+			<key>to</key>
+			<string>23B4804B-585E-4843-BBAE-3E3088CB7C8E - 23B4804B-585E-4843-BBAE-3E3088CB7C8E</string>
+		</dict>
+		<key>EF99B8F9-1891-4798-8CFB-589077B0DEF6</key>
 		<dict>
 			<key>from</key>
 			<string>23B4804B-585E-4843-BBAE-3E3088CB7C8E - 23B4804B-585E-4843-BBAE-3E3088CB7C8E</string>
 			<key>to</key>
 			<string>875FC226-2462-40E4-8F59-B6BDCAB2A8D3 - 875FC226-2462-40E4-8F59-B6BDCAB2A8D3</string>
-		</dict>
-		<key>DC87AFCD-1251-4A42-9A1F-F936EBABF63D</key>
-		<dict>
-			<key>from</key>
-			<string>4155B7E5-8B28-455B-A70D-61CD5E2A89F4 - 4155B7E5-8B28-455B-A70D-61CD5E2A89F4</string>
-			<key>to</key>
-			<string>23B4804B-585E-4843-BBAE-3E3088CB7C8E - 23B4804B-585E-4843-BBAE-3E3088CB7C8E</string>
 		</dict>
 	</dict>
 	<key>workflowMetaData</key>
